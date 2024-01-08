@@ -294,3 +294,20 @@ class CaseTest(fixtures.TestBase, AssertsCompiledSQL):
             ("two", 2),
             ("other", 3),
         ]
+
+    def test_type_of_case_expression_with_null_case_and_no_else_clause(self):
+        expr = case(
+            (info_table.c.pk < 0, None),
+            (info_table.c.pk <= 9, info_table.c.pk),
+            (info_table.c.pk > 9, None),
+        )
+
+        assert isinstance(expr.type, Integer)
+
+    def test_type_of_case_expression_with_null_case_and_else_clause(self):
+        expr = case(
+            (info_table.c.pk < 0, None),
+            else_=info_table.c.pk,
+        )
+
+        assert isinstance(expr.type, Integer)
